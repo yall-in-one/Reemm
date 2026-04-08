@@ -16,14 +16,14 @@ REEM introduces an SCR (Signal-to-Clutter Ratio) guided difficulty-aware reward 
 
 | Method | IoU↑ | PD↑ | FA↓ |
 |---|---|---|---|
-| MSHNet (baseline) | 65.68 | 89.25 | 27.71 |
+| MSHNet (baseline) | 65.60 | 93.20 | 13.51 |
 | **REEM (ours)** | **68.44** | **93.88** | **6.30** |
 
 ### NUDT-SIRST
 
 | Method | IoU↑ | PD↑ | FA↓ |
 |---|---|---|---|
-| MSHNet (baseline) | 72.89 | 96.19 | 30.40 |
+| MSHNet (baseline) | 74.52 | 95.37 | 29.00 |
 | **REEM (ours)** | **79.86** | **97.52** | **11.21** |
 
 ---
