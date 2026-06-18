@@ -6,8 +6,8 @@
 
 REEM introduces an SCR (Signal-to-Clutter Ratio) guided difficulty-aware reward mechanism on top of the MSHNet backbone. Low-SCR targets (harder to detect) receive higher training weight via a soft IoU reward term, improving detection performance without architectural changes.
 
-> **Note:** Training code and full codebase will be released upon paper publication.
-
+> **Note:** Training code and full codebase will be released soon. 
+> Evaluation code and pretrained weights are already available below.
 ---
 
 ## Results
@@ -113,9 +113,14 @@ tqdm
 ## Citation
 
 ```bibtex
-@inproceedings{reem2026pbvs,
-  title     = {SCR-Guided Difficulty-Aware Optimization for Infrared Small Target Detection},
-  booktitle = {CVPR Workshops (PBVS)},
-  year      = {2026}
+@InProceedings{Sevim_2026_CVPR,
+    author    = {Sevim, Yunus and T\"oreyin, Beh\c{c}et U\u{g}ur},
+    title     = {SCR-Guided Difficulty-Aware Optimization for Infrared Small Target Detection},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops},
+    month     = {June},
+    year      = {2026},
+    pages     = {7181-7189}
 }
 ```
+
+**Paper:** [CVF Open Access](https://openaccess.thecvf.com/content/CVPR2026W/PBVS/html/Sevim_SCR-Guided_Difficulty-Aware_Optimization_for_Infrared_Small_Target_Detection_CVPRW_2026_paper.html) | [arXiv](https://arxiv.org/abs/2606.18783)
