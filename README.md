@@ -6,8 +6,8 @@
 
 REEM introduces an SCR (Signal-to-Clutter Ratio) guided difficulty-aware reward mechanism on top of the MSHNet backbone. Low-SCR targets (harder to detect) receive higher training weight via a soft IoU reward term, improving detection performance without architectural changes.
 
-> **Note:** Training code and full codebase will be released soon. 
-> Evaluation code and pretrained weights are already available below.
+Training code, evaluation code, and pretrained weights are all available below.
+
 ---
 
 ## Results
@@ -25,6 +25,39 @@ REEM introduces an SCR (Signal-to-Clutter Ratio) guided difficulty-aware reward 
 |---|---|---|---|
 | MSHNet (baseline) | 74.52 | 95.37 | 29.00 |
 | **REEM (ours)** | **79.86** | **97.52** | **11.21** |
+
+---
+
+## Training
+
+`Reem_Training.py` reproduces the repo-exact MSHNet training pipeline (same augmentations, ImageNet normalization, repo-style mIoU/PD_FA metrics) and adds the SCR-guided reward loss on top of `SLSIoULoss`.
+
+```bash
+python Reem_Training.py \
+  --dataset-dir /path/to/dataset \
+  --epochs 300 --runs 10 --fixed-split --split-seed 0 \
+  --base-size 256 --crop-size 256 --batch-size 24 --workers 2 \
+  --warm-epoch 5 --lr 0.05 --bins 10 --blob-dist 3.0 \
+  --lambda-grid <comma-separated list of length --runs> \
+  --save-dir ./weight/REEM \
+  --summary-csv ./weight/REEM/summary.csv \
+  --target-fa-ppm 15.0
+```
+
+### Choosing `λ`
+
+`λ` controls the strength of the SCR-guided reward term (`L = L_SLS - λ * reward`) and its optimal value depends on the dataset. We recommend sweeping a small range of `λ` values across multiple runs and selecting the value that yields the best **validation** mIoU for your dataset, then reporting that run's **test** metrics. `--runs` and `--lambda-grid` make this straightforward — set `--lambda-grid` to a comma-separated list (length equal to `--runs`) covering the range you want to explore, e.g. low/mid/high values repeated a few times each for stability.
+
+Each run is saved under `<save-dir>/runXX_seedYY_splitZZ_lambdaW/`, with `weight.pkl` (best val mIoU checkpoint), `checkpoint.pkl` (optimizer state), and `metric.log`. The `--summary-csv` output ranks all runs by validation mIoU, making it easy to identify the best `λ` for the dataset at hand.
+
+Key arguments:
+
+| Argument | Meaning |
+|---|---|
+| `--runs` / `--lambda-grid` | Number of training runs and the SCR-reward weight `λ` used in each |
+| `--fixed-split` / `--split-seed` | Keep the train/val split identical across runs |
+| `--warm-epoch` | Epochs trained with plain IoU loss before SLS/shape and SCR-reward terms are enabled |
+| `--target-fa-ppm` | Operating point on the test PD/FA curve is selected at the threshold closest to this FA (ppm) |
 
 ---
 
@@ -54,11 +87,6 @@ python Reem_results.py \
   --prefer-repo-layout
 ```
 
-Expected output:
-```
-mIoU=68.49% | PD=93.88% | FA(ppm)=6.68 | op_idx=69/100
-```
-
 ### NUDT-SIRST
 
 ```bash
@@ -71,16 +99,6 @@ python Reem_results.py \
   --target-fa-ppm 15.0 \
   --prefer-repo-layout
 ```
-
-Expected output:
-```
-mIoU=79.86% | PD=97.35% | FA(ppm)=11.21 | op_idx=10/100
-```
-
-> **Note on operating point selection:** PD and FA are reported at the threshold where
-> FA is minimized subject to PD >= target. Minor differences from paper table values
-> (~0.2% PD, ~0.4 ppm FA on IRSTD-1k) are due to bin resolution (bins=100).
-> IoU matches exactly on both datasets; FA matches exactly on NUDT-SIRST.
 
 ---
 
